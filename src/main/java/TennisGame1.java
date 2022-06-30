@@ -1,76 +1,59 @@
+import java.util.List;
 
 public class TennisGame1 implements TennisGame {
-    
-    private int m_score1 = 0;
-    private int m_score2 = 0;
-    private String player1Name;
-    private String player2Name;
 
-    public TennisGame1(String player1Name, String player2Name) {
-        this.player1Name = player1Name;
-        this.player2Name = player2Name;
-    }
+  public static final String ALL = "All";
+  public static final String DEUCE = "Deuce";
+  public static final String ADVANTAGE = "Advantage";
+  public static final String WIN = "Win";
+  private final List<String> scores = List.of("Love", "Fifteen", "Thirty", "Forty");
+  private final String playerOneName;
+  private final String playerTwoName;
+  private int playerOneScore = 0;
+  private int playerTwoScore = 0;
 
-    public void wonPoint(String playerName) {
-        if (playerName == "player1")
-            m_score1 += 1;
-        else
-            m_score2 += 1;
-    }
+  public TennisGame1(String playerOneName, String playerTwoName) {
+    this.playerOneName = playerOneName;
+    this.playerTwoName = playerTwoName;
+  }
 
-    public String getScore() {
-        String score = "";
-        int tempScore=0;
-        if (m_score1==m_score2)
-        {
-            switch (m_score1)
-            {
-                case 0:
-                        score = "Love-All";
-                    break;
-                case 1:
-                        score = "Fifteen-All";
-                    break;
-                case 2:
-                        score = "Thirty-All";
-                    break;
-                default:
-                        score = "Deuce";
-                    break;
-                
-            }
-        }
-        else if (m_score1>=4 || m_score2>=4)
-        {
-            int minusResult = m_score1-m_score2;
-            if (minusResult==1) score ="Advantage player1";
-            else if (minusResult ==-1) score ="Advantage player2";
-            else if (minusResult>=2) score = "Win for player1";
-            else score ="Win for player2";
-        }
-        else
-        {
-            for (int i=1; i<3; i++)
-            {
-                if (i==1) tempScore = m_score1;
-                else { score+="-"; tempScore = m_score2;}
-                switch(tempScore)
-                {
-                    case 0:
-                        score+="Love";
-                        break;
-                    case 1:
-                        score+="Fifteen";
-                        break;
-                    case 2:
-                        score+="Thirty";
-                        break;
-                    case 3:
-                        score+="Forty";
-                        break;
-                }
-            }
-        }
-        return score;
+  public void wonPoint(String playerName) {
+    if (playerOneName.equals(playerName)) {
+      playerOneScore += 1;
     }
+    if (playerTwoName.equals(playerName)) {
+      playerTwoScore += 1;
+    }
+  }
+
+  public String getScore() {
+    if (playerOneScore == playerTwoScore) {
+      return getScoreForTie();
+    } else if (playerOneScore >= 4 || playerTwoScore >= 4) {
+      return getScoreAdvantageOrWin();
+    } else {
+      return getScoreForDefault();
+    }
+  }
+
+  private String getScoreForDefault() {
+    return scores.get(playerOneScore) + "-" + scores.get(playerTwoScore);
+  }
+
+  private String getScoreAdvantageOrWin() {
+    int difference = playerOneScore - playerTwoScore;
+    if (difference == 1) {
+      return ADVANTAGE + " " + playerOneName;
+    } else if (difference == -1) {
+      return ADVANTAGE + " " + playerTwoName;
+    } else if (difference >= 2) {
+      return WIN + " for " + playerOneName;
+    } else {
+      return WIN + " for " + playerTwoName;
+    }
+  }
+
+  private String getScoreForTie() {
+    return playerOneScore <= 2 ? scores.get(playerTwoScore) + "-" + ALL : DEUCE;
+  }
 }
